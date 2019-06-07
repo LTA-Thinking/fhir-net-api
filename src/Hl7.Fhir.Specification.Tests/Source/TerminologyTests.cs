@@ -199,6 +199,24 @@ namespace Hl7.Fhir.Specification.Tests
                 () => svc.ValidateCode("http://hl7.org/fhir/ValueSet/substance-code", code: "1166006", system: "http://snomed.info/sct"));
         }
 
+        //[Fact(Skip = "Don't want to run these kind of integration tests anymore"), Trait("TestCategory", "IntegrationTest")]
+        [Fact]
+        public void ExternalServiceValidateCodeTest2()
+        {
+            var client = new FhirClient("https://ontoserver.csiro.au/stu3-latest");
+            var svc = new ExternalTerminologyService(client);
+
+            Parameters parameters = new Parameters();
+            parameters.Add("url", new FhirUri("http://hl7.org/fhir/ValueSet/substance-code"));
+            parameters.Add("code", new Code("1166006"));
+            parameters.Add("system", new FhirUri("http://snomed.info/sct"));
+            var result = svc.ValidateCode(parameters, "ValueSet");
+            Parameters.ParameterComponent parameter = result.Get("result").SingleOrDefault();
+            Assert.NotNull(parameter);
+            Assert.IsType<FhirBoolean>(parameter.Value);
+            Assert.True(((FhirBoolean)parameter.Value).Value);
+        }
+
         [Fact(Skip = "Don't want to run these kind of integration tests anymore"), Trait("TestCategory", "IntegrationTest")]
         public void ExternalServiceValidateCodeTest()
         {
